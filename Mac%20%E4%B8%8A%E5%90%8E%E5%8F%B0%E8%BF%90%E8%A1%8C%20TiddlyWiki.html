@@ -1,0 +1,98 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="generator" content="TiddlyWiki" />
+<meta name="tiddlywiki-version" content="5.1.17" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="format-detection" content="telephone=no">
+<link id="faviconLink" rel="shortcut icon" href="favicon.ico">
+<link rel="stylesheet" href="static.css">
+<title>Mac 上后台运行 TiddlyWiki: flowons 的知识管理笔记 — 基于 TiddlyWiki 的非线性网页式笔记</title>
+</head>
+<body class="tc-body">
+
+<section class="tc-story-river">
+
+<p><div class="tc-tiddler-frame tc-tiddler-view-frame tc-tiddler-exists   tc-tagged-TiddlyWiki tc-tagged-%E5%88%9D%E5%A7%8B%E5%8C%96 " data-tags="TiddlyWiki 初始化" data-tiddler-title="Mac 上后台运行 TiddlyWiki"><div class="tc-tiddler-title">
+<div class="tc-titlebar">
+<span class="tc-tiddler-controls">
+<span class=" tc-reveal"><button aria-label="更多" class="tc-btn-invisible tc-btn-%24%3A%2Fcore%2Fui%2FButtons%2Fmore-tiddler-actions" title="更多动作"></button><div class=" tc-reveal" hidden="true"></div></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal"><button aria-label="编辑" class="tc-btn-invisible tc-btn-%24%3A%2Fcore%2Fui%2FButtons%2Fedit" title="编辑此条目"></button></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal"><button aria-label="关闭" class="tc-btn-invisible tc-btn-%24%3A%2Fcore%2Fui%2FButtons%2Fclose" title="关闭此条目"></button></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal" hidden="true"></span><span class=" tc-reveal"><button aria-label="tiddlymap" class="tc-btn-invisible tc-btn-%24%3A%2Fplugins%2Ffelixhayashi%2Ftiddlymap%2Fmisc%2FquickConnectButton " title="Toggle TiddlyMap actions">
+
+
+</button></span>
+</span>
+
+<span>
+
+<span class="tc-tiddler-title-icon" style="fill:;">
+
+</span>
+
+
+
+<h2 class="tc-title">
+Mac 上后台运行 TiddlyWiki
+</h2>
+
+</span>
+
+</div>
+
+<div class="tc-tiddler-info tc-popup-handle tc-reveal" hidden="true"></div>
+</div><div class=" tc-reveal" hidden="true"></div>
+<div class=" tc-reveal">
+<div class="tc-subtitle">
+<a class="tc-tiddlylink tc-tiddlylink-missing" href=".html">
+
+</a> 2018年10月17日 13:18
+</div>
+</div>
+<div class=" tc-reveal">
+<div class="tc-tags-wrapper"><span class="tc-tag-list-item">
+
+
+<span class="tc-tag-label tc-btn-invisible" draggable="true" style="background-color:;
+fill:#333333;
+color:#333333;">
+ TiddlyWiki
+</span>
+
+<span class="tc-drop-down tc-reveal" hidden="true"></span>
+
+</span>
+<span class="tc-tag-list-item">
+
+
+<span class="tc-tag-label tc-btn-invisible" draggable="true" style="background-color:;
+fill:#333333;
+color:#333333;">
+ 初始化
+</span>
+
+<span class="tc-drop-down tc-reveal" hidden="true"></span>
+
+</span>
+</div>
+</div>
+<div class="tc-tiddler-body tc-reveal"><p>Tiddlywiki 确实好玩，但一直很讨厌点击保存就下载 html 的动作。在探索了 Tiddlyspot、Tiddlywiki Desktop、noteself 等等方案之后，还是回归到了最初的方案：在本地使用 node.js 的方式。</p><h1 class="">Outline</h1><ol><li>安装 node.js 和 npm</li><li>安装 tiddlywiki</li><li>安装 pm2</li><li>搜索 tiddlywiki.js</li><li>修改 shell 环境变量文件</li><li>go</li></ol><h1 class="">安装 node.js 和 npm</h1><p>网上教程泛滥，略。</p><h1 class="">安装 Tiddlywiki </h1><p>参照<a class="tc-tiddlylink-external" href="https://tiddlywiki.com/#Installing%20TiddlyWiki%20on%20Node.js" rel="noopener noreferrer" target="_blank">官方建议</a>即可。</p><h1 class="">安装 pm2</h1><pre class="bash hljs"><code>npm install pm2@latest -g</code></pre><h1 class="">搜索 tiddlywiki.js 的位置</h1><pre class="bash hljs"><code>find / -name tiddlywiki.js
+</code></pre><h1 class="">修改 shell 环境变量文件</h1><p>我自己用的是 <code>zsh</code>，所以需要修改 <code>.zshrc</code>。如果使用 <code>bash</code>，则需要去掉<code>wiki</code>后方的括号。</p><pre class="bash hljs"><code><span class="hljs-keyword">function</span> <span class="hljs-function"><span class="hljs-title">wiki</span></span>() {
+    pm2 delete tiddlywiki <span class="hljs-comment"># in case it was already running</span>
+    <span class="hljs-built_in">cd</span> ~/personal-wiki <span class="hljs-comment"># path to where files are stored</span>
+    pm2 start --name tiddlywiki /上一步find命令发现的路径/tiddlywiki.js -- --server <span class="hljs-number">8080</span>
+    <span class="hljs-built_in">echo</span> <span class="hljs-string">"Starting Wiki... (Browser will open automatically)"</span>
+    sleep .<span class="hljs-number">9</span>
+    open http://localhost:<span class="hljs-number">8080</span>
+}</code></pre><h1 class="">go</h1><p>重启 shell 客户端，或者执行 <code>source ~/.zshrc</code>，在 shell 客户端中执行 <code>wiki</code> 命令即可。</p><h1 class="">参考：</h1><p><a class="tc-tiddlylink-external" href="https://medium.com/@mc_bloomfield/getting-tiddlywiki-to-run-in-the-background-using-pm2-b104a8f60de8" rel="noopener noreferrer" target="_blank">Getting tiddlywiki to Run in the Background using PM2</a></p><p><a class="tc-tiddlylink-external" href="http://blog.dimpurr.com/tiddly-wiki/" rel="noopener noreferrer" target="_blank">使用 TiddlyWiki 打造轻便个人 Wiki 知识库</a></p></div>
+
+
+</div>
+
+</p>
+
+</section>
+</body>
+</html>
